@@ -12,7 +12,7 @@ The `test/` directory is recursively traversed and each file is checksummed usin
 If the catalog did not match the specified directory, then a human-readable diff will be produced:
 
 ```sh
-$ echo bah > test/test123/a.tx
+$ echo bah > test/test123/a.txt
 $ cargo run ./test
     Finished dev [unoptimized + debuginfo] target(s) in 0.12s
      Running `target/debug/corroborator test/`
