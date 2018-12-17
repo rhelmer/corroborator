@@ -4,7 +4,7 @@ corroborator is a library and example program for verifying that the contents of
 
 ## Testing
 ```sh
-$ cargo run ./test
+$ cargo run test/
 ```
 
 The `test/` directory is recursively traversed and each file is checksummed using SHA-512. These values are compared against a known-good set in `data/catalog.txt`, which is compiled into the binary.
@@ -22,7 +22,7 @@ To verify that `corraborator` is actual working, the test data may be modified:
 
 ```sh
 $ echo bah > test/test123/a.txt
-$ cargo run ./test
+$ cargo run test/
 ```
 
 Besides the usual `cargo` output, a human-readable diff is produced:
@@ -45,4 +45,4 @@ note: Run with `RUST_BACKTRACE=1` for a backtrace.
 $ cargo build --release
 ```
 
-An optimized static binary is now present in `./target/release/corroborator`. As mentioned above, `./data/catalog.txt` is compiled into the binary.
+An optimized static binary is now present in `target/release/corroborator`. As mentioned above, `data/catalog.txt` is compiled into the binary.
