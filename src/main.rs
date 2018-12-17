@@ -1,51 +1,45 @@
-extern crate sha2;
-extern crate walkdir;
+extern crate corroborator;
+extern crate diff;
+extern crate docopt;
 
-use std::fs::File;
-use std::io::prelude::*;
+use std::str;
 
-use sha2::{Digest, Sha512};
-use walkdir::WalkDir;
+use corroborator::checksum_dir;
 
-const BUFFER_SIZE: usize = 1024;
+use docopt::Docopt;
 
-/// Print digest result as hex string and name pair
-fn print_result(sum: &[u8], name: &str) {
-    for byte in sum {
-        print!("{:02x}", byte);
-    }
-    println!("\t{}", name);
-}
+// compile catalog into binary.
+const CATALOG: &'static str = include_str!("../data/catalog.txt");
 
-/// Compute digest value for given `Reader` and print it
-/// On any error simply return without doing anything
-fn process<D: Digest + Default, R: Read>(reader: &mut R, name: &str) {
-    let mut sh = D::default();
-    let mut buffer = [0u8; BUFFER_SIZE];
-    loop {
-        let n = match reader.read(&mut buffer) {
-            Ok(n) => n,
-            Err(_) => return,
-        };
-        sh.input(&buffer[..n]);
-        if n == 0 || n < BUFFER_SIZE {
-            break;
-        }
-    }
-    print_result(&sh.result(), name);
-}
+const USAGE: &'static str = "
+Usage:
+  corroborator <appdir>
+  corroborator (-h | --help)
+
+Options:
+  -h --help     Show this screen.
+";
 
 fn main() {
-    for entry in WalkDir::new("/Applications/Firefox.app") {
-        let entry = entry.unwrap();
-        let path = entry.path();
+    let args = Docopt::new(USAGE)
+        .and_then(|dopt| dopt.parse())
+        .unwrap_or_else(|e| e.exit());
 
-        if !path.is_dir() {
-            println!("blah");
+    let appdir = args.get_str("<appdir>");
 
-            if let Ok(mut file) = File::open(&path) {
-                process::<Sha512, _>(&mut file, "blah");
+    let file_entries = checksum_dir(appdir);
+
+    let left = file_entries.as_str();
+    let right = CATALOG;
+
+    if left != right {
+        for diff in diff::lines(left, &right) {
+            match diff {
+                diff::Result::Left(l) => println!("-{}", l),
+                diff::Result::Both(l, _) => println!(" {}", l),
+                diff::Result::Right(r) => println!("+{}", r),
             }
         }
+        panic!("does not match");
     }
 }

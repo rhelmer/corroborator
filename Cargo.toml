@@ -1,8 +1,14 @@
 [package]
-name = "app-dir-checker"
+name = "corroborator"
 version = "0.1.0"
-authors = ["Robert Helmer <rhelmer@mozilla.com>"]
+authors = ["Robert Helmer <rhelmer@rhelmer.org>"]
+
+[lib]
+name = "corroborator"
+path = "src/lib.rs"
 
 [dependencies]
+diff = "0.1.11"
+docopt = "0.8.3"
 sha2 = "0.7"
 walkdir = "2"
