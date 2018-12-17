@@ -1,6 +1,7 @@
 extern crate sha2;
 extern crate walkdir;
 
+use std::collections::HashMap;
 use std::fs::File;
 use std::io::prelude::*;
 
@@ -36,27 +37,20 @@ fn process<D: Digest + Default, R: Read>(reader: &mut R) -> (String) {
 }
 
 /// Walk directory and generate shasum for each.
-/// Return a string with each filename and shasum delimited by newline, e.g.
-/// "checksum1 file1\checksum2 file2"
-/// This format is intended to be compatible with the output of the `shasum` command-line tool.
-pub fn checksum_dir(appdir: &str) -> String {
-    let mut file_entries: String = "".to_owned();
+/// Return a HashMap with filename as key and SHA-512 as value.
+pub fn checksum_dir(appdir: &str) -> HashMap<String, String> {
+    let mut file_entries = HashMap::new();
 
     for entry in WalkDir::new(appdir) {
         let entry = entry.unwrap();
-        let path = entry.path();
+        let path = entry.path().to_owned();
 
         if path.is_file() {
             if let Ok(mut file) = File::open(&path) {
                 let result = &process::<Sha512, _>(&mut file);
-                let entry = path.strip_prefix(appdir).unwrap();
+                let entry = path.strip_prefix(appdir).unwrap().to_owned();
 
-                file_entries = format!(
-                    "{}{} {}\n",
-                    file_entries,
-                    result.to_owned(),
-                    entry.to_str().unwrap(),
-                );
+                file_entries.insert(entry.to_str().unwrap().to_owned(), result.to_owned());
             }
         }
     }

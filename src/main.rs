@@ -1,5 +1,4 @@
 extern crate corroborator;
-extern crate diff;
 extern crate docopt;
 
 use std::str;
@@ -29,17 +28,21 @@ fn main() {
 
     let file_entries = checksum_dir(appdir);
 
-    let left = file_entries.as_str();
-    let right = CATALOG;
+    if file_entries.len() != CATALOG.lines().count() {
+        panic!(
+            "actual entries do not match expected, {} vs. {}",
+            file_entries.len(),
+            CATALOG.lines().count()
+        );
+    }
 
-    if left != right {
-        for diff in diff::lines(left, &right) {
-            match diff {
-                diff::Result::Left(l) => println!("-{}", l),
-                diff::Result::Both(l, _) => println!(" {}", l),
-                diff::Result::Right(r) => println!("+{}", r),
-            }
-        }
-        panic!("does not match");
+    for expected_entry in CATALOG.lines() {
+        let mut iter = expected_entry.split_whitespace();
+        let expected_checksum = iter.next().unwrap();
+        let filename = iter.next().unwrap();
+
+        let actual_checksum = file_entries.get(filename).unwrap();
+
+        assert_eq!(expected_checksum, actual_checksum, "{}", filename);
     }
 }
