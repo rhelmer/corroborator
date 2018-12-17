@@ -1,0 +1,8 @@
+[package]
+name = "app-dir-checker"
+version = "0.1.0"
+authors = ["Robert Helmer <rhelmer@mozilla.com>"]
+
+[dependencies]
+sha2 = "0.7"
+walkdir = "2"
