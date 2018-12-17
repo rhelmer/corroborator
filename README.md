@@ -9,11 +9,25 @@ $ cargo run ./test
 
 The `test/` directory is recursively traversed and each file is checksummed using SHA-512. These values are compared against a known-good set in `data/catalog.txt`, which is compiled into the binary.
 
-If the catalog did not match the specified directory, then a human-readable diff will be produced:
+The output will only be from `cargo`, and no special output from `corroborator`:
+
+```
+    Finished dev [unoptimized + debuginfo] target(s) in 0.12s
+     Running `target/debug/corroborator test/`
+```
+
+This is to match the behavior of the Unix `diff` command.
+
+To verify that `corraborator` is actual working, the test data may be modified:
 
 ```sh
 $ echo bah > test/test123/a.txt
 $ cargo run ./test
+```
+
+Besides the usual `cargo` output, a human-readable diff is produced:
+
+```
     Finished dev [unoptimized + debuginfo] target(s) in 0.12s
      Running `target/debug/corroborator test/`
  72f25d90ef4cfecda8fa2c47561af5af0a10a92bfd15986b1f916358bf6ac8a37858a14d27329506a3766bad0f34d2e04caf397c1607b4380eb33c97d37dfc37 test123/c.txt
