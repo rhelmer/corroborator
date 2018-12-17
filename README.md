@@ -18,7 +18,7 @@ The output will only be from `cargo`, and no special output from `corroborator`:
 
 This is to match the behavior of the Unix `diff` command.
 
-To verify that `corraborator` is actual working, the test data may be modified:
+To verify that `corroborator` is actual working, the test data may be modified:
 
 ```sh
 $ echo bah > test/test123/a.txt
