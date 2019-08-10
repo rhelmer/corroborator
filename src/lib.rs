@@ -10,8 +10,8 @@ use walkdir::WalkDir;
 
 const BUFFER_SIZE: usize = 1024;
 
-/// Compute digest value for given `Reader` and print it
-/// On any error simply return without doing anything
+/// Compute digest value for given `Reader` and return it.
+/// On any error simply return without doing anything.
 fn process<D: Digest + Default, R: Read>(reader: &mut R) -> (String) {
     let mut sh = D::default();
     let mut buffer = [0u8; BUFFER_SIZE];
